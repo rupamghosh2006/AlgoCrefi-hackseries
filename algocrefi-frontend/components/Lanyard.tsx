@@ -274,6 +274,13 @@ function Band({
       <mesh ref={band}>
         <meshLineGeometry />
         <meshLineMaterial
+          args={[
+            {
+              resolution: new THREE.Vector2(
+                ...(isMobile ? [1000, 2000] : [1000, 1000])
+              ),
+            },
+          ]}
           color="#d7dbe7"
           depthTest={false}
           resolution={isMobile ? [1000, 2000] : [1000, 1000]}
