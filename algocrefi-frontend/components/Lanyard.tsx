@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unknown-property */
 
 import { useEffect, useRef, useState } from "react";
-import { Canvas, extend, useFrame } from "@react-three/fiber";
+import { Canvas, extend, type ThreeElement, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Environment, Lightformer, RoundedBox, useTexture } from "@react-three/drei";
 import {
   BallCollider,
@@ -15,22 +15,13 @@ import {
 } from "@react-three/rapier";
 import { MeshLineGeometry, MeshLineMaterial } from "meshline";
 import * as THREE from "three";
-import { ThreeEvent } from "@react-three/fiber";
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
-// Augment JSX intrinsic elements for meshline custom elements
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      meshLineGeometry: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      meshLineMaterial: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        color?: string;
-        depthTest?: boolean;
-        resolution?: [number, number];
-        lineWidth?: number;
-      };
-    }
+declare module "@react-three/fiber" {
+  interface ThreeElements {
+    meshLineGeometry: ThreeElement<typeof MeshLineGeometry>;
+    meshLineMaterial: ThreeElement<typeof MeshLineMaterial>;
   }
 }
 
