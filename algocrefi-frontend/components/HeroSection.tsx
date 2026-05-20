@@ -5,6 +5,7 @@ import { fetchPoolSnapshot } from "@/src/utils/marketService";
 import { getPoolInfo } from "@/src/utils/poolService";
 import { getLoanInfoPublic } from "@/src/utils/loanService";
 import PoolValueChart from "@/components/dashboard/PoolValueChart";
+import Lanyard from "@/components/Lanyard";
 
 function formatAlgo(value: number | null) {
   if (!Number.isFinite(value ?? NaN)) return "--";
@@ -362,7 +363,9 @@ export default function HeroSection({ onEnterApp }: { onEnterApp: () => void }) 
           flexDirection: "column",
           justifyContent: "center",
           padding: "120px 5vw 80px 6vw",
+          maxWidth: "min(64vw, 980px)",
           position: "relative",
+          zIndex: 2,
         }}
       >
         <h1
@@ -537,6 +540,44 @@ export default function HeroSection({ onEnterApp }: { onEnterApp: () => void }) 
       </div>
 
       <div
+        className="hero-video-side"
+        style={{
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          right: 0,
+          width: "clamp(440px, 44vw, 860px)",
+          height: "100%",
+          borderRadius: 0,
+          overflow: "hidden",
+          zIndex: 1,
+          pointerEvents: "none",
+          boxShadow: "inset 36px 0 72px rgba(5,5,10,0.55)",
+          background: "#000",
+        }}
+      >
+        <Lanyard />
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(90deg, rgba(5,5,10,0.72) 0%, rgba(5,5,10,0.35) 26%, rgba(5,5,10,0.12) 58%, rgba(5,5,10,0) 100%)",
+          }}
+        />
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(140% 100% at 100% 50%, rgba(5,5,10,0) 58%, rgba(5,5,10,0.42) 84%, rgba(5,5,10,0.82) 100%)",
+          }}
+        />
+      </div>
+
+      <div
         className="hero-scroll"
         style={{
           position: "absolute",
@@ -590,7 +631,11 @@ export default function HeroSection({ onEnterApp }: { onEnterApp: () => void }) 
             grid-template-columns: 1fr !important;
             min-height: auto !important;
           }
+          .hero-video-side {
+            display: none !important;
+          }
           .hero-inner {
+            max-width: 100% !important;
             padding: 104px 16px 112px 16px !important;
             justify-content: flex-start !important;
           }

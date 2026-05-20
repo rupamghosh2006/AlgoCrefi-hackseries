@@ -48,6 +48,15 @@ export default function AuraSection() {
     transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
   });
 
+  const ticks = Array.from({ length: 30 }).map((_, i) => {
+    const angle = (i / 30) * 2 * Math.PI;
+    const x1 = Number((140 + (R - 14) * Math.cos(angle)).toFixed(6));
+    const y1 = Number((140 + (R - 14) * Math.sin(angle)).toFixed(6));
+    const x2 = Number((140 + (R - 8) * Math.cos(angle)).toFixed(6));
+    const y2 = Number((140 + (R - 8) * Math.sin(angle)).toFixed(6));
+    return { i, x1, y1, x2, y2 };
+  });
+
   return (
     <section
       id="aura"
@@ -175,14 +184,17 @@ export default function AuraSection() {
           <div style={{ position: "relative", width: 280, height: 280 }}>
             <svg width="280" height="280" viewBox="0 0 280 280" style={{ transform: "rotate(-90deg)", position: "absolute", inset: 0 }}>
               {/* Tick marks */}
-              {Array.from({ length: 30 }).map((_, i) => {
-                const angle = (i / 30) * 2 * Math.PI;
-                const x1 = 140 + (R - 14) * Math.cos(angle);
-                const y1 = 140 + (R - 14) * Math.sin(angle);
-                const x2 = 140 + (R - 8) * Math.cos(angle);
-                const y2 = 140 + (R - 8) * Math.sin(angle);
-                return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,183,71,0.15)" strokeWidth="1.5" />;
-              })}
+              {ticks.map((tick) => (
+                <line
+                  key={tick.i}
+                  x1={tick.x1}
+                  y1={tick.y1}
+                  x2={tick.x2}
+                  y2={tick.y2}
+                  stroke="rgba(255,183,71,0.15)"
+                  strokeWidth="1.5"
+                />
+              ))}
               {/* Track */}
               <circle cx="140" cy="140" r={R} stroke="rgba(255,183,71,0.08)" strokeWidth="7" fill="none" />
               {/* Fill */}
