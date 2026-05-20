@@ -106,6 +106,7 @@ export default function Lanyard({
 
 // Extend RapierRigidBody with the lerped property used in useFrame
 type RigidBodyWithLerp = RapierRigidBody & { lerped?: THREE.Vector3 };
+type RapierRef = React.RefObject<RapierRigidBody>;
 
 function Band({
   maxSpeed = 50,
@@ -157,10 +158,10 @@ function Band({
     logoTexture.needsUpdate = true;
   }, [logoTexture]);
 
-  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
-  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.5, 0]]);
+  useRopeJoint(fixed as RapierRef, j1 as RapierRef, [[0, 0, 0], [0, 0, 0], 1]);
+  useRopeJoint(j1 as RapierRef, j2 as RapierRef, [[0, 0, 0], [0, 0, 0], 1]);
+  useRopeJoint(j2 as RapierRef, j3 as RapierRef, [[0, 0, 0], [0, 0, 0], 1]);
+  useSphericalJoint(j3 as RapierRef, card as RapierRef, [[0, 0, 0], [0, 1.5, 0]]);
 
   useEffect(() => {
     if (hovered) {
