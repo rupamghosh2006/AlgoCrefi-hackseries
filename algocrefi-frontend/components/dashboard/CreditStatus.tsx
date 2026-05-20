@@ -93,6 +93,8 @@ export default function CreditStatus({ user, lending, error, onRefresh }: Props)
   const overdue = isLoanOverdue(lending.dueTs);
   const dueDate = lending.dueTs > 0 ? formatDueDate(lending.dueTs) : null;
   const unsecuredLimitAlgo = lending.unsecuredCreditLimitMicroAlgo / 1_000_000;
+  const auraPointsInt = Math.max(0, Math.floor(Number(lending.netAuraPoints || 0)));
+  const auraPenaltyInt = Math.max(0, Math.floor(Number(user.auraPenalty || 0)));
   const activeLoanAmountMicro = lending.dueAmount > 0 ? lending.dueAmount : 0;
   const displayError = error && isMissingLocalStateError(error)
     ? "Wallet is not opted into lending yet. Complete lending opt-in once, then retry."
@@ -348,7 +350,7 @@ export default function CreditStatus({ user, lending, error, onRefresh }: Props)
           <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             <span style={{ fontFamily: "monospace", fontSize: 9, color: "rgba(255,255,255,0.25)", letterSpacing: "0.1em" }}>AURA</span>
             <span className="font-display" style={{ fontSize: 28, fontWeight: 700, color: "#FFB347", lineHeight: 1, letterSpacing: "-0.03em" }}>
-              {Number(lending.netAuraPoints).toFixed(2)}
+              {auraPointsInt}
             </span>
             <span style={{ fontFamily: "Inter,sans-serif", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>/ 100</span>
           </div>
@@ -366,13 +368,13 @@ export default function CreditStatus({ user, lending, error, onRefresh }: Props)
             color: unsecuredEligible ? "#00FFD1" : "#FFB347",
           }}
         >
-          {unsecuredEligible ? "✓ Eligible for unsecured loans" : `Earn ${Math.max(30 - lending.netAuraPoints, 0).toFixed(2)} more pts`}
+          {unsecuredEligible ? "✓ Eligible for unsecured loans" : `Earn ${Math.max(30 - auraPointsInt, 0)} more pts`}
         </div>
 
         <div style={{ width: "100%", marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
           {[
-            { label: "NET", val: `${Number(lending.netAuraPoints).toFixed(2)} pts`, color: "#FFB347" },
-            { label: "PENALTY", val: `${user.auraPenalty} pts`, color: user.auraPenalty > 0 ? "#FF4444" : "rgba(255,255,255,0.3)" },
+            { label: "NET", val: `${auraPointsInt} pts`, color: "#FFB347" },
+            { label: "PENALTY", val: `${auraPenaltyInt} pts`, color: user.auraPenalty > 0 ? "#FF4444" : "rgba(255,255,255,0.3)" },
           ].map((row) => (
             <div key={row.label} style={{ display: "flex", justifyContent: "space-between", padding: "7px 10px", background: "rgba(255,255,255,0.02)", borderRadius: 8 }}>
               <span style={{ fontFamily: "monospace", fontSize: 10, color: "rgba(255,255,255,0.25)", letterSpacing: "0.1em" }}>{row.label}</span>
@@ -578,7 +580,7 @@ export default function CreditStatus({ user, lending, error, onRefresh }: Props)
                   zIndex: 10,
                 }}
               >
-                {lending.blacklisted > 0 ? "Wallet blacklisted for unsecured loan" : `Need 30 AURA pts (have ${Number(lending.netAuraPoints).toFixed(2)})`}
+                {lending.blacklisted > 0 ? "Wallet blacklisted for unsecured loan" : `Need 30 AURA pts (have ${auraPointsInt})`}
               </div>
             )}
           </div>

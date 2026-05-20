@@ -129,6 +129,7 @@ export default function StatCards({ pool, user, lending, loading = false, errors
   const poolCount = useCounter(poolAlgo, 1000, loading ? 0 : refreshKey.length + pool.balance);
   const sharesCount = useCounter(user.shares, 1000, loading ? 0 : refreshKey.length + user.shares);
   const auraCount = useCounter(lending.netAuraPoints, 900, loading ? 0 : refreshKey.length + lending.netAuraPoints);
+  const auraPointsInt = Math.max(0, Math.floor(Number(lending.netAuraPoints || 0)));
   const unsecuredEligible = lending.unsecuredEligible;
   const shareAlgoEstimate = estimateAlgoFromShares(user.shares, {
     balance: pool.balance,
@@ -255,7 +256,7 @@ export default function StatCards({ pool, user, lending, loading = false, errors
           <AuraArc pts={lending.netAuraPoints} />
         </div>
         <div className="font-display" style={{ fontSize: 28, fontWeight: 700, color: "#FFB347", marginTop: 6, letterSpacing: "-0.03em", lineHeight: 1 }}>
-          {loading ? <span style={{ display: "inline-block", width: 80, height: 30, background: "rgba(255,255,255,0.08)", borderRadius: 6, animation: "shimmer 1.2s linear infinite" }} /> : auraCount.toFixed(2)}
+          {loading ? <span style={{ display: "inline-block", width: 80, height: 30, background: "rgba(255,255,255,0.08)", borderRadius: 6, animation: "shimmer 1.2s linear infinite" }} /> : Math.floor(Math.max(0, auraCount)).toString()}
           <span style={{ fontSize: 13, fontWeight: 400, color: "rgba(255,183,71,0.5)", marginLeft: 4 }}>pts</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 6 }}>
@@ -266,7 +267,7 @@ export default function StatCards({ pool, user, lending, loading = false, errors
             </>
           ) : (
             <span style={{ fontFamily: "Inter,sans-serif", fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
-              Need {Math.max(30 - lending.netAuraPoints, 0).toFixed(2)} pts
+              Need {Math.max(30 - auraPointsInt, 0)} pts
             </span>
           )}
         </div>
