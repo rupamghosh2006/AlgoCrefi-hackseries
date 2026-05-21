@@ -460,20 +460,30 @@ export default function CreditStatus({ user, lending, error, onRefresh }: Props)
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: "auto" }}>
           {loanMode === "collateral" && (
             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: 12, display: "grid", gap: 8 }}>
-              <input
-                value={collateralAmount}
-                onChange={(e) => setCollateralAmount(e.target.value)}
-                placeholder="ALGO Amount"
-                type="number"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px", color: "#F0F0F0" }}
-              />
-              <input
-                value={collateralDays}
-                onChange={(e) => setCollateralDays(e.target.value)}
-                placeholder="Days to Repay"
-                type="number"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px", color: "#F0F0F0" }}
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  value={collateralAmount}
+                  onChange={(e) => setCollateralAmount(e.target.value)}
+                  placeholder="Amount"
+                  type="number"
+                  style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 52px 10px 10px", color: "#F0F0F0" }}
+                />
+                <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontFamily: "Inter,sans-serif", fontSize: 12, color: "rgba(255,255,255,0.65)" }}>
+                  ALGO
+                </span>
+              </div>
+              <div style={{ position: "relative" }}>
+                <input
+                  value={collateralDays}
+                  onChange={(e) => setCollateralDays(e.target.value)}
+                  placeholder="Repay in"
+                  type="number"
+                  style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 52px 10px 10px", color: "#F0F0F0" }}
+                />
+                <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontFamily: "Inter,sans-serif", fontSize: 12, color: "rgba(255,255,255,0.65)" }}>
+                  days
+                </span>
+              </div>
               <div style={{ fontFamily: "Inter,sans-serif", fontSize: 12, color: "rgba(255,255,255,0.75)" }}>
                 {quoteLoading
                   ? "Fetching quote..."
