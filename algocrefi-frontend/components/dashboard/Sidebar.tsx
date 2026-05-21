@@ -3,6 +3,57 @@ import { useState, useEffect } from "react";
 import { disconnectWallet, truncateAddress } from "@/src/utils/walletService";
 import { getWalletAddress, logout } from "@/src/utils/authService";
 
+const SESSION_TX_APP_ID = 758675636;
+const INDEXER_BASE_URL = "https://testnet-idx.algonode.cloud";
+const INDEXER_PAGE_LIMIT = 1000;
+const INDEXER_MAX_PAGES = 200;
+const TX_COUNT_REFRESH_MS = 60_000;
+
+type IndexerTransactionsResponse = {
+  transactions?: unknown[];
+  "next-token"?: string;
+};
+
+async function fetchApplicationTxCount(appId: number, signal?: AbortSignal) {
+  let total = 0;
+  let nextToken: string | null = null;
+  let pagesFetched = 0;
+  const seenTokens = new Set<string>();
+
+  while (pagesFetched < INDEXER_MAX_PAGES) {
+    const url = new URL("/v2/transactions", INDEXER_BASE_URL);
+    url.searchParams.set("application-id", String(appId));
+    url.searchParams.set("limit", String(INDEXER_PAGE_LIMIT));
+
+    if (nextToken) {
+      url.searchParams.set("next", nextToken);
+    }
+
+    const response = await fetch(url.toString(), { signal, cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch application transactions (${response.status})`);
+    }
+
+    const payload = (await response.json()) as IndexerTransactionsResponse;
+    total += Array.isArray(payload.transactions) ? payload.transactions.length : 0;
+
+    const upcomingToken = typeof payload["next-token"] === "string" && payload["next-token"] ? payload["next-token"] : null;
+    if (!upcomingToken) {
+      return total;
+    }
+
+    if (seenTokens.has(upcomingToken)) {
+      throw new Error("Indexer pagination loop detected");
+    }
+
+    seenTokens.add(upcomingToken);
+    nextToken = upcomingToken;
+    pagesFetched += 1;
+  }
+
+  throw new Error(`Exceeded pagination safety limit (${INDEXER_MAX_PAGES} pages)`);
+}
+
 const NAV = [
   {
     id: "dashboard",
@@ -68,7 +119,7 @@ interface SidebarProps {
 
 export default function Sidebar({ active, onNav }: SidebarProps) {
   const [hovered, setHovered] = useState<string | null>(null);
-  const [txCount] = useState<number | null>(null);
+  const [txCount, setTxCount] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const [walletAddress, setWalletAddress] = useState("ALGO3X...F9KT");
 
@@ -90,6 +141,44 @@ export default function Sidebar({ active, onNav }: SidebarProps) {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    let mountedRef = true;
+    let loading = false;
+    let activeController: AbortController | null = null;
+
+    const loadTxCount = async () => {
+      if (loading) return;
+      loading = true;
+      activeController?.abort();
+      activeController = new AbortController();
+
+      try {
+        const total = await fetchApplicationTxCount(SESSION_TX_APP_ID, activeController.signal);
+        if (mountedRef) {
+          setTxCount(total);
+        }
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return;
+        if (mountedRef) {
+          console.error("[sidebar] failed to fetch app transaction count", error);
+        }
+      } finally {
+        loading = false;
+      }
+    };
+
+    void loadTxCount();
+    const interval = window.setInterval(() => {
+      void loadTxCount();
+    }, TX_COUNT_REFRESH_MS);
+
+    return () => {
+      mountedRef = false;
+      activeController?.abort();
+      window.clearInterval(interval);
+    };
   }, []);
 
   return (
